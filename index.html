@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ar-EG" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' data: blob:; style-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>تذكير</title>
+  <meta name="theme-color" content="#0f766e">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="تذكير">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="icon" href="icon-192.png" type="image/png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="app-header">
+    <h1>تذكير</h1>
+    <p>ذاكرة التزاماتك: مين، وإيه، وبعد إيه</p>
+  </header>
+
+  <div id="banners" aria-live="polite"></div>
+
+  <main>
+    <!-- ============ شاشة: التزام جديد ============ -->
+    <section id="view-add" class="view">
+      <h2 id="form-title">التزام جديد</h2>
+
+      <form id="add-form" novalidate>
+        <label for="f-action">إيه اللي لازم تعمله؟ <span class="req">(مطلوب)</span></label>
+        <input id="f-action" type="text" maxlength="300" autocomplete="off"
+               placeholder="مثال: ابعتله الملف النهائي">
+
+        <label for="f-person">مع مين؟ <span class="opt">(اختياري)</span></label>
+        <input id="f-person" type="text" list="people-list" maxlength="80" autocomplete="off"
+               placeholder="مثال: أحمد">
+        <datalist id="people-list"></datalist>
+
+        <label for="f-trigger">بعد إيه / لما إيه؟ <span class="opt">(اختياري)</span></label>
+        <input id="f-trigger" type="text" list="trigger-list" maxlength="120" autocomplete="off"
+               placeholder="مثال: بعد اجتماع الخميس">
+        <datalist id="trigger-list">
+          <option value="بعد الاجتماع"></option>
+          <option value="بعد المكالمة"></option>
+          <option value="لما أشوفه"></option>
+          <option value="بعد التسليم"></option>
+          <option value="بعد المحاضرة"></option>
+        </datalist>
+
+        <label for="f-event">وقت الحدث <span class="opt">(اختياري)</span></label>
+        <input id="f-event" type="datetime-local">
+        <p class="hint">التطبيق مش بيعرف إن الحدث خلص لوحده. لو عايز تذكير بعده، اكتب وقت الحدث بإيدك.</p>
+
+        <label for="f-context">ملاحظة سياق <span class="opt">(اختياري)</span></label>
+        <textarea id="f-context" rows="3" maxlength="1000"
+                  placeholder="أي تفصيلة تفكّرك: أنهي ملف؟ ليه؟"></textarea>
+
+        <fieldset>
+          <legend>التذكير <span class="opt">(اختياري)</span></legend>
+          <input id="f-remind" type="datetime-local" aria-label="وقت التذكير">
+          <div class="quick">
+            <button type="button" class="chip" data-quick="m15">بعد ١٥ دقيقة</button>
+            <button type="button" class="chip" data-quick="h1">بعد ساعة</button>
+            <button type="button" class="chip" data-quick="tomorrow">بكرة ٩ الصبح</button>
+            <button type="button" class="chip" data-quick="none">من غير تذكير</button>
+          </div>
+          <p class="hint">الأزرار بتحسب من وقت الحدث لو كتبته، ولو لأ بتحسب من دلوقتي.</p>
+        </fieldset>
+
+        <div class="row">
+          <button type="submit" class="primary">راجع وأكّد</button>
+          <button type="button" id="btn-cancel-edit" class="ghost" hidden>إلغاء التعديل</button>
+        </div>
+      </form>
+
+      <div id="review" class="review" hidden>
+        <h3>راجع قبل الحفظ</h3>
+        <div id="review-lines"></div>
+        <div id="review-notes" class="notes"></div>
+        <div class="row">
+          <button type="button" id="btn-confirm" class="primary">تمام، احفظ</button>
+          <button type="button" id="btn-back" class="ghost">رجوع للتعديل</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ شاشة: الالتزامات ============ -->
+    <section id="view-list" class="view" hidden>
+      <div class="seg" role="group" aria-label="الحالة">
+        <button type="button" id="seg-open" class="seg-btn on" data-status="open">مفتوحة (<span id="count-open">٠</span>)</button>
+        <button type="button" id="seg-done" class="seg-btn" data-status="done">تمّت (<span id="count-done">٠</span>)</button>
+      </div>
+      <input id="q" type="search" placeholder="دوّر بالاسم أو بكلمة" aria-label="بحث" autocomplete="off">
+      <div id="people-chips" class="chips"></div>
+      <ul id="list" class="list"></ul>
+      <p id="empty" class="empty" hidden></p>
+    </section>
+
+    <!-- ============ شاشة: بياناتي ============ -->
+    <section id="view-data" class="view" hidden>
+      <h2>بياناتي</h2>
+
+      <div class="panel">
+        <h3>فين بياناتك؟</h3>
+        <p>بياناتك محفوظة <strong>جوه المتصفح على جهازك ده بس</strong>. التطبيق مش بيبعت أي حاجة لأي سيرفر أو خدمة ذكاء اصطناعي، ومفيش حساب.</p>
+        <p class="hint">يعني لو مسحت بيانات المتصفح أو غيّرت الجهاز من غير نسخة احتياطية، البيانات بتضيع. <span id="persist-status"></span></p>
+      </div>
+
+      <div class="panel">
+        <h3>نسخة احتياطية</h3>
+        <p id="last-export" class="hint"></p>
+        <div class="row">
+          <button type="button" id="btn-export" class="primary">تصدير ملف JSON</button>
+          <label class="file-btn">استيراد ملف<input id="file-import" type="file" accept=".json,application/json"></label>
+        </div>
+        <details>
+          <summary>لو التنزيل مش شغال: نسخ ولصق كنص</summary>
+          <div class="row">
+            <button type="button" id="btn-copy" class="ghost">نسخ البيانات كنص</button>
+          </div>
+          <textarea id="paste-box" rows="4" placeholder="الصق هنا النص المنسوخ واضغط استيراد"></textarea>
+          <div class="row"><button type="button" id="btn-import-text" class="ghost">استيراد من النص</button></div>
+        </details>
+      </div>
+
+      <div class="panel">
+        <h3>امسح كل بياناتي</h3>
+        <p>بيمسح كل الالتزامات من الجهاز ده نهائيًا. (النسخ اللي صدّرتها قبل كده فاضلة عندك.)</p>
+        <div class="row"><button type="button" id="btn-wipe" class="danger">امسح كل حاجة</button></div>
+        <p class="hint">لمسح التطبيق نفسه: امسح أيقونته من الشاشة الرئيسية، ومن إعدادات Safari امسح بيانات الموقع.</p>
+      </div>
+
+      <div class="panel">
+        <h3>حدود النسخة دي (بصراحة)</h3>
+        <ul class="plain">
+          <li>التذكير بيظهر <strong>جوه التطبيق لما تفتحه</strong>. مفيش إشعارات وهو مقفول.</li>
+          <li>لو عايز تنبيه مضمون وهو مقفول: من الالتزام اضغط «تقويم» وافتح الملف على الموبايل، والتقويم هو اللي بينبّه.</li>
+          <li>التطبيق مش بيكتشف الأحداث. وقت الحدث بتكتبه بإيدك.</li>
+          <li>ده تجربة شخصية. استخدامك ليه مش بيثبت إن فيه سوق أو إن الفكرة نجحت.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabbar" aria-label="التنقل">
+    <button type="button" class="tab on" data-view="add">جديد</button>
+    <button type="button" class="tab" data-view="list">الالتزامات</button>
+    <button type="button" class="tab" data-view="data">بياناتي</button>
+  </nav>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="logic.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

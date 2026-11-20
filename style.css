@@ -1,0 +1,212 @@
+/* style.css — شكل تذكير. الاتجاه من اليمين لليسار (RTL). */
+:root {
+  --bg: #f4f6f3;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #5b6770;
+  --line: #dde3df;
+  --accent: #0f766e;
+  --accent-text: #ffffff;
+  --soft: #e3f1ee;
+  --warn-bg: #fff4d6;
+  --warn-text: #7a4a00;
+  --danger: #b42318;
+  --due: #b42318;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #111716;
+    --card: #1a2220;
+    --text: #e6ecea;
+    --muted: #9fb0aa;
+    --line: #2b3835;
+    --accent: #2dd4bf;
+    --accent-text: #06201c;
+    --soft: #16302c;
+    --warn-bg: #3a2d0b;
+    --warn-text: #f5d58a;
+    --danger: #ff8a80;
+    --due: #ff8a80;
+  }
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Tahoma, "Noto Naskh Arabic", sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+  padding-bottom: calc(76px + env(safe-area-inset-bottom));
+}
+
+.app-header {
+  padding: calc(14px + env(safe-area-inset-top)) 18px 10px;
+}
+.app-header h1 { margin: 0; font-size: 26px; color: var(--accent); }
+.app-header p { margin: 0; color: var(--muted); font-size: 14px; }
+
+main { padding: 0 16px 16px; max-width: 640px; margin: 0 auto; }
+h2 { font-size: 20px; margin: 10px 0 8px; }
+h3 { font-size: 17px; margin: 0 0 6px; }
+
+/* ---------- الفورم ---------- */
+label { display: block; margin: 14px 0 4px; font-weight: 600; }
+.req { color: var(--due); font-weight: 400; font-size: 13px; }
+.opt { color: var(--muted); font-weight: 400; font-size: 13px; }
+
+input[type="text"], input[type="search"], input[type="datetime-local"], textarea {
+  width: 100%;
+  font: inherit;
+  font-size: 16px; /* 16px عشان iPhone ما يكبّرش الصفحة لوحده */
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text);
+}
+input:focus, textarea:focus, button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 1px;
+}
+textarea { resize: vertical; }
+
+fieldset {
+  margin: 16px 0 0;
+  padding: 10px 12px 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+legend { padding: 0 6px; font-weight: 600; }
+
+.hint { color: var(--muted); font-size: 14px; margin: 6px 0 0; }
+
+.row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; align-items: center; }
+
+button, .file-btn {
+  font: inherit;
+  font-size: 16px;
+  min-height: 46px;
+  padding: 8px 18px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: var(--card);
+  color: var(--text);
+  cursor: pointer;
+}
+button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 700; }
+button.ghost { background: transparent; }
+button.danger { background: transparent; color: var(--danger); border-color: var(--danger); font-weight: 700; }
+.file-btn { display: inline-flex; align-items: center; cursor: pointer; }
+.file-btn input { display: none; }
+
+.quick, .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.chip {
+  min-height: 38px;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-size: 15px;
+  background: var(--soft);
+  border-color: transparent;
+}
+.chip.on { background: var(--accent); color: var(--accent-text); }
+
+/* ---------- خطوة التأكيد ---------- */
+.review {
+  margin-top: 10px;
+  padding: 14px;
+  background: var(--card);
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+}
+.review p { margin: 6px 0; }
+.review .main { font-size: 19px; font-weight: 700; }
+.notes p { font-size: 14px; background: var(--warn-bg); color: var(--warn-text); padding: 8px 10px; border-radius: 10px; }
+
+/* ---------- القايمة ---------- */
+.seg { display: flex; gap: 8px; margin: 12px 0; }
+.seg-btn { flex: 1; }
+.seg-btn.on { background: var(--accent); color: var(--accent-text); border-color: var(--accent); font-weight: 700; }
+
+.list { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 12px; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+}
+.card.done .card-title { text-decoration: line-through; color: var(--muted); }
+.card.due { border-color: var(--due); border-width: 2px; }
+.card-title { font-size: 18px; font-weight: 700; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.tag { background: var(--soft); border-radius: 8px; padding: 2px 10px; font-size: 14px; }
+.tag.late { background: var(--due); color: #fff; font-weight: 700; }
+.ctx { margin: 6px 0; color: var(--muted); font-size: 15px; white-space: pre-wrap; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.actions button { min-height: 40px; padding: 4px 14px; font-size: 15px; }
+
+.empty { text-align: center; color: var(--muted); padding: 24px 8px; }
+
+/* ---------- بياناتي ---------- */
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px 14px;
+  margin: 12px 0;
+}
+.panel p { margin: 6px 0; }
+.plain { margin: 6px 0; padding-inline-start: 20px; }
+details { margin-top: 12px; }
+summary { cursor: pointer; color: var(--accent); }
+
+/* ---------- تنبيهات أعلى الصفحة ---------- */
+#banners { padding: 0 16px; max-width: 640px; margin: 0 auto; display: grid; gap: 10px; }
+.banner {
+  background: var(--warn-bg);
+  color: var(--warn-text);
+  border: 1px solid var(--due);
+  border-radius: 14px;
+  padding: 10px 14px;
+}
+.banner.info { border-color: var(--line); }
+.banner strong { display: block; font-size: 18px; }
+.banner .actions button:not(.primary) { background: var(--card); }
+
+/* ---------- الشريط السفلي ---------- */
+.tabbar {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  display: flex;
+  background: var(--card);
+  border-top: 1px solid var(--line);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.tab {
+  flex: 1;
+  border: 0;
+  border-radius: 0;
+  min-height: 60px;
+  background: transparent;
+  font-size: 16px;
+}
+.tab.on { color: var(--accent); font-weight: 800; box-shadow: inset 0 3px 0 var(--accent); }
+
+.toast {
+  position: fixed;
+  inset-inline: 16px;
+  bottom: calc(80px + env(safe-area-inset-bottom));
+  max-width: 420px;
+  margin-inline: auto;
+  background: #111;
+  color: #fff;
+  padding: 12px 16px;
+  border-radius: 12px;
+  text-align: center;
+  z-index: 10;
+}
